@@ -5,7 +5,7 @@ const REJECTED = 'REJECTED'   // 失败状态
 
 const isPromise = value => {
   if(typeof (value === 'object' && value!== null) || typeof value === 'function') {
-    return typeof value.then === 'function';
+    return typeof value?.then === 'function';
   }
   return false;
 }
@@ -141,6 +141,14 @@ class Promise {
       }
     });
     return promise2;
+  }
+  finally(callback) {
+    return this.then((value) => {
+      // 等待 finally 方法执行完毕，将上一个成功的结果向下传递
+      return Promise.resolve(callback()).then(() => value);
+    }, error => {
+      return Promise.resolve(callback()).then(() => { throw error; });
+    });
   }
   // TODO: 静态方法
   // 测试是否符合规范

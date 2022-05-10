@@ -2,19 +2,34 @@ import Promise from "./Promise";
 
 const p1 = new Promise((resolve, reject) => {
   setTimeout(() => {
-    resolve('resolve1');
+    resolve('resolve');
   }, 2000);
 });
 
 const p2 = new Promise((resolve, reject) => {
   setTimeout(() => {
-    reject('resolve2');
+    reject('reject');
   }, 1000);
 });
 
 
-Promise.resolve(100).then(data => console.log(data));
-Promise.resolve(p1).then(data => console.log(data));
+p1.finally(() => {
+  console.log('finally');
+}).then(data => {
+  console.log(data);
+}, error => {
+  console.log(error)
+});
 
-Promise.reject(101).then(data => console.log(data), error => console.log('error', error));
-Promise.reject(p1).then(data => console.log(data), error => console.log('error', error));
+p2.then(data => {
+  console.log(data);
+}, error => {
+  console.log(error);
+}).finally(() => {
+  console.log('finally');
+  // return p1;
+}).then(data => {
+  console.log(data);
+}, error => {
+  console.log(error)
+});
