@@ -137,4 +137,27 @@ class Promise {
   }
 }
 
+// 测试是否符合规范
+// 静态方法
+Promise.deferred = function() {
+  let dfd = {}
+  dfd.promise = new Promise((resolve, reject) => {
+    dfd.resolve = resolve;
+    dfd.reject = reject;
+  })
+  return dfd;
+}
+
+// Promise 化：把异步的 node 中的 api 转化成 Promise 方法，只针对 node 方法
+Promise.promisify = function(fn) {
+  return function(...args) {
+    return new Promise((resolve, reject) => {
+      fn(...args, function(error, data) {
+        if(error) reject(error);
+        resolve(data);
+      })
+    })
+  }
+}
+
 export default Promise;
