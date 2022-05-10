@@ -200,6 +200,12 @@ class Promise {
       }
     });
   }
+  // resolve
+  static resolve(value) {
+    return isPromise(value) ?
+    value :
+    new Promise(resolve => resolve(value));
+  }
 }
 
 export default Promise;

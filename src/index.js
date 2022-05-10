@@ -13,8 +13,5 @@ const p2 = new Promise((resolve, reject) => {
 });
 
 
-Promise.race(['a', p1, p2]).then((data) => {
-  console.log('data', data);
-}, (error) => {
-  console.log(error);
-})
+Promise.resolve(100).then(data => console.log(data));
+Promise.resolve(p1).then(data => console.log(data));
