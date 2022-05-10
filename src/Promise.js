@@ -202,9 +202,16 @@ class Promise {
   }
   // resolve
   static resolve(value) {
+    // resolve 方法里面放一个 promise 会等待这个 promise 执行完成
+    // return new Promise(resolve => resolve(value)); 等同于下面
     return isPromise(value) ?
     value :
     new Promise(resolve => resolve(value));
+  }
+  // reject
+  static reject(value) {
+    // reject 不会解析 value 中的 promise
+    return new Promise(reject => reject(value));
   }
 }
 

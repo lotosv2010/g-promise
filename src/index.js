@@ -15,3 +15,6 @@ const p2 = new Promise((resolve, reject) => {
 
 Promise.resolve(100).then(data => console.log(data));
 Promise.resolve(p1).then(data => console.log(data));
+
+Promise.reject(101).then(data => console.log(data), error => console.log('error', error));
+Promise.reject(p1).then(data => console.log(data), error => console.log('error', error));
