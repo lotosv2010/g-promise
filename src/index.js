@@ -1,39 +1,20 @@
 import Promise from "./Promise";
 
-const promise = new Promise((resolve, reject) => {
-  // setTimeout(() => {
-  //   Math.random() >= 0.5
-  //     ? resolve('resolve')
-  //     : reject('reject');
-  // }, 2000);
-  // throw new Error('executor error'); // TODO: 错误一执行器中的错误
-  resolve('resolve');
-  // reject('reject');
+const p1 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('resolve1');
+  }, 2000);
 });
 
-function other() {
-  return new Promise((resolve, reject) => {
-    resolve('other');
-  })
-}
+const p2 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('resolve2');
+  }, 1000);
+});
 
-const  p1= promise
-.then()
-.then()
-.then((data) => {
-  console.log('success', data);
-  // throw new Error('then resolve error'); // TODO: 错误二then方法中的成功回调中的错误
-  return 100;
-}, (error) => {
-  console.log('error', error.message)
-  return 101;
-})
 
-p1.then((data) => {
+Promise.all(['a', p1, p2]).then((data) => {
   console.log('data', data);
-  return other();
 }, (error) => {
-  console.log(error.message);
-  return 1002;
+  console.log(error);
 })
-.then(data => console.log(data))

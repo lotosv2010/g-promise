@@ -3,6 +3,13 @@ const PENDING = 'PENDING'     // 等待状态
 const FULFILLED = 'FULFILLED' // 成功状态
 const REJECTED = 'REJECTED'   // 失败状态
 
+const isPromise = value => {
+  if(typeof (value === 'object' && value!== null) || typeof value === 'function') {
+    return typeof value.then === 'function';
+  }
+  return false;
+}
+
 const resolvePromise = (promise2, x, resolve, reject) => {
   // 判断可能你的 promise 要和别人的 promise 来混用
   // 可能不同的promise库之间要相互调用
@@ -135,28 +142,50 @@ class Promise {
     });
     return promise2;
   }
-}
-
-// 测试是否符合规范
-// 静态方法
-Promise.deferred = function() {
-  let dfd = {}
-  dfd.promise = new Promise((resolve, reject) => {
-    dfd.resolve = resolve;
-    dfd.reject = reject;
-  })
-  return dfd;
-}
-
-// Promise 化：把异步的 node 中的 api 转化成 Promise 方法，只针对 node 方法
-Promise.promisify = function(fn) {
-  return function(...args) {
-    return new Promise((resolve, reject) => {
-      fn(...args, function(error, data) {
-        if(error) reject(error);
-        resolve(data);
-      })
+  // TODO: 静态方法
+  // 测试是否符合规范
+  static deferred() {
+    let dfd = {}
+    dfd.promise = new Promise((resolve, reject) => {
+      dfd.resolve = resolve;
+      dfd.reject = reject;
     })
+    return dfd;
+  }
+  // Promise 化
+  // 把异步的 node 中的 api 转化成 Promise 方法，只针对 node 方法
+  static promisify(fn) {
+    return function(...args) {
+      return new Promise((resolve, reject) => {
+        fn(...args, function(error, data) {
+          if(error) reject(error);
+          resolve(data);
+        })
+      })
+    }
+  }
+  // all
+  static all(promises) {
+    return new Promise((resolve, reject) => {
+      // 让一个 promise 执行，就是调用它的 then 方法
+      let res = [], j = 0;
+      const processData = (data) => {
+        res[j] = data;
+        if(++j === promises.length) {
+          resolve(res);
+        }
+      }
+      for (const current of promises) {
+        if(isPromise(current)) { // promise 对象
+          // 如果有任何一个 promise 失败了，直接让这个 promise变成失败态即可
+          current.then(data => {
+            processData(data);
+          }, reject);
+        } else { // 普通值
+          processData(current);
+        }
+      }
+    });
   }
 }
 
