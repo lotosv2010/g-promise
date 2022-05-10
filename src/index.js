@@ -6,7 +6,9 @@ const promise = new Promise((resolve, reject) => {
   //     ? resolve('resolve')
   //     : reject('reject');
   // }, 2000);
-  resolve('resolve');
+  // throw new Error('executor error'); // TODO: 错误一执行器中的错误
+  // resolve('resolve');
+  reject('reject');
 });
 
 function other() {
@@ -17,16 +19,18 @@ function other() {
 
 const  p1= promise.then((data) => {
   console.log('success', data);
-  return p1; // TODO: 返回自己会报 Chaining cycle detected for promise
-  // return 100;
+  throw new Error('then resolve error'); // TODO: 错误二then方法中的成功回调中的错误
+  return 100;
 }, (error) => {
-  console.log('error', error)
+  console.log('error', error.message)
+  return 101;
 })
 
 p1.then((data) => {
-  console.log(data);
+  console.log('data', data);
   return other();
 }, (error) => {
-  console.log(error.message)
+  console.log(error.message);
+  return 1002;
 })
 .then(data => console.log(data))

@@ -71,38 +71,61 @@ class Promise {
       this.reason = reason; // 保存失败的原因
       this.onRejectCallback.forEach(fn => fn()); // 发布的过程
     }
-    executor(resolve, reject);
+    try { // try...catch...只能捕获同步异常
+      // executor执行的时候需要传入两个参数，用来给用户改变状态使用的
+      executor(resolve, reject);
+    } catch (error) {
+      // 表示当前有异常，那就使用这个异常作为 Promise失败的原因
+      reject(error);
+    }
+    
   }
   then(onFulFilled, onRejected) {
     const promise2 = new Promise((resolve, reject) => {
       // 判断状态
       if(this.status === FULFILLED) {
         setTimeout(() => { // TODO: 此处用异步逻辑为了解决 Uncaught ReferenceError: Cannot access 'promise2' before initialization
-          const x = onFulFilled(this.value);
-          // 判断 x 的值是普通值还是promise对象
-          // 如果是普通值，直接调用 resolve
-          // 如果是 promise 对象，查看 promise 对象的返回结果
-          // 再根据 promise 对象返回的结果，决定调用 resolve 还是调用 reject
-          resolvePromise(promise2, x, resolve, reject);
+          try {
+            const x = onFulFilled(this.value);
+            // 判断 x 的值是普通值还是promise对象
+            // 如果是普通值，直接调用 resolve
+            // 如果是 promise 对象，查看 promise 对象的返回结果
+            // 再根据 promise 对象返回的结果，决定调用 resolve 还是调用 reject
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
         }, 0)
       } else if(this.status === REJECTED) {
         setTimeout(() => {
-          const x = onRejected(this.reason);
-          resolvePromise(promise2, x, resolve, reject);
+          try {
+            const x = onRejected(this.reason);
+            resolvePromise(promise2, x, resolve, reject);
+          } catch (error) {
+            reject(error);
+          }
         }, 0);
       } else {
         // 订阅的过程
         // 将成功和失败回调存储起来
         this.onResolveCallback.push(() => {
           setTimeout(() => {
-            const x = onFulFilled(this.value);
-            resolvePromise(promise2, x, resolve, reject);
+            try {
+              const x = onFulFilled(this.value);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (error) {
+              reject(error);
+            }
           }, 0);
         });
         this.onRejectCallback.push(() => {
           setTimeout(() => {
-            const x = onRejected(this.reason);
-            resolvePromise(promise2, x, resolve, reject);
+            try {
+              const x = onRejected(this.reason);
+              resolvePromise(promise2, x, resolve, reject);
+            } catch (error) {
+              reject(error);
+            }
           }, 0);
         });
       }
