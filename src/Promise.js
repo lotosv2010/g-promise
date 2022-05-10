@@ -187,6 +187,19 @@ class Promise {
       }
     });
   }
+  // race
+  static race(promises) {
+    return new Promise((resolve, reject) => {
+      for (const current of promises) {
+        // 采用第一个调用 resolve 或 reject 的结果
+        if(isPromise(current)) {
+          current.then(resolve, reject);
+        } else {
+          resolve(current)
+        }
+      }
+    });
+  }
 }
 
 export default Promise;
