@@ -150,6 +150,9 @@ class Promise {
       return Promise.resolve(callback()).then(() => { throw error; });
     });
   }
+  catch(errorCallback) {
+    return this.then(null, errorCallback)
+  }
   // TODO: 静态方法
   // 测试是否符合规范
   static deferred() {
