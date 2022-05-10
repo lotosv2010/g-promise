@@ -7,8 +7,8 @@ const promise = new Promise((resolve, reject) => {
   //     : reject('reject');
   // }, 2000);
   // throw new Error('executor error'); // TODO: 错误一执行器中的错误
-  // resolve('resolve');
-  reject('reject');
+  resolve('resolve');
+  // reject('reject');
 });
 
 function other() {
@@ -17,9 +17,12 @@ function other() {
   })
 }
 
-const  p1= promise.then((data) => {
+const  p1= promise
+.then()
+.then()
+.then((data) => {
   console.log('success', data);
-  throw new Error('then resolve error'); // TODO: 错误二then方法中的成功回调中的错误
+  // throw new Error('then resolve error'); // TODO: 错误二then方法中的成功回调中的错误
   return 100;
 }, (error) => {
   console.log('error', error.message)

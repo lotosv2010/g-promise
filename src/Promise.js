@@ -81,6 +81,9 @@ class Promise {
     
   }
   then(onFulFilled, onRejected) {
+    // TODO: 可选参数的处理
+    onFulFilled = typeof onFulFilled == 'function' ? onFulFilled : val => val;
+    onRejected = typeof onRejected == 'function' ? onRejected : val => { throw val };
     const promise2 = new Promise((resolve, reject) => {
       // 判断状态
       if(this.status === FULFILLED) {
